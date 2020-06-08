@@ -28,7 +28,7 @@ namespace BankKata.UnitTests
             expected.AppendLine(Header);
             expected.AppendLine($"{now:d}  {amountStr} {depositStr}");
             sut.Deposit(amount);
-            sut.PrintStatement(StatementFilter.All);
+            sut.PrintStatement();
             var actual = sut.Printer.GetStringBuilder();
             Assert.Equal(expected.ToString(), actual.ToString());
         }
@@ -47,7 +47,7 @@ namespace BankKata.UnitTests
             sut.Deposit(100);
             sut.Clock.Change(later);
             sut.Deposit(1100);
-            sut.PrintStatement(StatementFilter.All);
+            sut.PrintStatement();
             var actual = sut.Printer.GetStringBuilder();
             Assert.Equal(expected.ToString(), actual.ToString());
         }
@@ -62,7 +62,7 @@ namespace BankKata.UnitTests
             sut.Deposit(100);
             sut.Clock.Advance(1);
             sut.Withdraw(90);
-            sut.PrintStatement(StatementFilter.All);
+            sut.PrintStatement();
             var actual = sut.Printer.GetStringBuilder();
             Assert.Equal(expected.ToString(), actual.ToString());
         }
@@ -80,8 +80,8 @@ namespace BankKata.UnitTests
 
             sut.Deposit(200);
             sut.Transfer(anotherAccount, 100);
-            sut.PrintStatement(StatementFilter.All);
-            anotherAccount.PrintStatement(StatementFilter.All);
+            sut.PrintStatement();
+            anotherAccount.PrintStatement();
 
             var actual = sut.Printer.GetStringBuilder();
             Assert.Equal(expected.ToString(), actual.ToString());

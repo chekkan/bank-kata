@@ -36,6 +36,11 @@ namespace BankKata
             account.Deposit(amount);
         }
 
+        public void PrintStatement()
+        {
+            PrintStatement(StatementFilter.All);
+        }
+
         public void PrintStatement(StatementFilter filter)
         {
             var predicate = filter.Compile();
