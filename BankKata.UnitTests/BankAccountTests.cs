@@ -27,7 +27,7 @@ namespace BankKata.UnitTests
             var expected = new StringBuilder();
             expected.AppendLine(Header);
             expected.AppendLine($"{now:d}  {amountStr} {depositStr}");
-            sut.Deposit(amount);
+            sut.Deposit(new Money(amount));
             sut.PrintStatement();
             var actual = sut.Printer.GetStringBuilder();
             Assert.Equal(expected.ToString(), actual.ToString());
@@ -44,9 +44,9 @@ namespace BankKata.UnitTests
             expected.AppendLine($"{later:d}  1100.00   1200.00");
 
             sut.Clock.Change(now);
-            sut.Deposit(100);
+            sut.Deposit(new Money(100));
             sut.Clock.Change(later);
-            sut.Deposit(1100);
+            sut.Deposit(new Money(1100));
             sut.PrintStatement();
             var actual = sut.Printer.GetStringBuilder();
             Assert.Equal(expected.ToString(), actual.ToString());
@@ -59,9 +59,9 @@ namespace BankKata.UnitTests
             expected.AppendLine(Header);
             expected.AppendLine("24/11/2019   100.00    100.00");
             expected.AppendLine("25/11/2019   -90.00     10.00");
-            sut.Deposit(100);
+            sut.Deposit(new Money(100));
             sut.Clock.Advance(1);
-            sut.Withdraw(90);
+            sut.Withdraw(new Money(90));
             sut.PrintStatement();
             var actual = sut.Printer.GetStringBuilder();
             Assert.Equal(expected.ToString(), actual.ToString());
@@ -78,8 +78,8 @@ namespace BankKata.UnitTests
             expected.AppendLine("24/11/2019   100.00    100.00");
             var anotherAccount = new BankAccount(sut.Printer, sut.Clock);
 
-            sut.Deposit(200);
-            sut.Transfer(anotherAccount, 100);
+            sut.Deposit(new Money(200));
+            sut.Transfer(anotherAccount, new Money(100));
             sut.PrintStatement();
             anotherAccount.PrintStatement();
 
@@ -95,10 +95,10 @@ namespace BankKata.UnitTests
             expected.AppendLine("24/11/2019   200.00    200.00");
             expected.AppendLine("24/11/2019   100.00    300.00");
 
-            sut.Deposit(200);
-            sut.Deposit(100);
-            sut.Deposit(9);
-            sut.PrintStatement(StatementFilter.DepositedMoreThan(10));
+            sut.Deposit(new Money(200));
+            sut.Deposit(new Money(100));
+            sut.Deposit(new Money(9));
+            sut.PrintStatement(StatementFilter.DepositedMoreThan(new Money(10)));
             var actual = sut.Printer.GetStringBuilder();
             Assert.Equal(expected.ToString(), actual.ToString());
         }
@@ -111,11 +111,11 @@ namespace BankKata.UnitTests
             expected.AppendLine("24/11/2019   -20.00     80.00");
             expected.AppendLine("24/11/2019   -40.00     40.00");
 
-            sut.Deposit(100);
-            sut.Withdraw(20);
-            sut.Withdraw(40);
-            sut.Withdraw(10);
-            sut.PrintStatement(StatementFilter.WithdrawnMoreThan(10));
+            sut.Deposit(new Money(100));
+            sut.Withdraw(new Money(20));
+            sut.Withdraw(new Money(40));
+            sut.Withdraw(new Money(10));
+            sut.PrintStatement(StatementFilter.WithdrawnMoreThan(new Money(10)));
             var actual = sut.Printer.GetStringBuilder();
             Assert.Equal(expected.ToString(), actual.ToString());
         }
@@ -128,11 +128,11 @@ namespace BankKata.UnitTests
             expected.AppendLine("24/11/2019   110.00    110.00");
             expected.AppendLine("24/11/2019   -20.00     90.00");
 
-            sut.Deposit(110);
-            sut.Withdraw(20);
+            sut.Deposit(new Money(110));
+            sut.Withdraw(new Money(20));
             DateTime xMas = DateTime.Parse("25/12/2019");
             sut.Clock.Change(xMas);
-            sut.Withdraw(50);
+            sut.Withdraw(new Money(50));
             sut.PrintStatement(StatementFilter.Before(xMas));
 
             var actual = sut.Printer.GetStringBuilder();

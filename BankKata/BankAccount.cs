@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -10,7 +9,7 @@ namespace BankKata
         private readonly TextWriter printer;
         private readonly IClock clock;
         private readonly List<Transaction> transactions = new List<Transaction>();
-        private int balance = 0;
+        private Money balance = new Money(0);
 
         public BankAccount(TextWriter printer, IClock clock)
         {
@@ -18,19 +17,21 @@ namespace BankKata
             this.clock = clock;
         }
 
-        public void Deposit(int amount)
+        public void Deposit(Money amount)
         {
             this.balance += amount;
-            this.transactions.Add(new Transaction(this.clock.Now, amount, balance));
+            Transaction item = new Transaction(this.clock.Now, amount, balance);
+            this.transactions.Add(item);
         }
 
-        public void Withdraw(int amount)
+        public void Withdraw(Money amount)
         {
             this.balance -= amount;
-            this.transactions.Add(new Transaction(this.clock.Now, amount * -1, balance));
+            Transaction item = new Transaction(this.clock.Now, amount * new Money(-1), balance);
+            this.transactions.Add(item);
         }
 
-        public void Transfer(BankAccount account, int amount)
+        public void Transfer(BankAccount account, Money amount)
         {
             this.Withdraw(amount);
             account.Deposit(amount);
@@ -52,32 +53,5 @@ namespace BankKata
             }
             this.printer.Flush();
         }
-    }
-
-    public class StatementFilter
-    {
-        private readonly Func<Transaction, bool> predicate;
-
-        private StatementFilter(Func<Transaction, bool> predicate)
-        {
-            this.predicate = predicate;
-        }
-
-        public Func<Transaction, bool> Compile()
-        {
-            return this.predicate;
-        }
-
-        public static StatementFilter All 
-            => new StatementFilter((_) => true);
-
-        public static StatementFilter DepositedMoreThan(int amount) 
-            => new StatementFilter((transaction) => transaction.Amount > amount);
-
-        public static StatementFilter WithdrawnMoreThan(int amount)
-            => new StatementFilter((transaction) => transaction.Amount < amount * -1);
-
-        public static StatementFilter Before(DateTime timestamp)
-         => new StatementFilter((transaction) => transaction.Timestamp < timestamp);
     }
 }
