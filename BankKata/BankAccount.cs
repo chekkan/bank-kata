@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace BankKata
 {
@@ -7,7 +9,8 @@ namespace BankKata
     {
         private readonly TextWriter printer;
         private readonly IClock clock;
-        private int amount;
+        private readonly Stack<Transaction> transactions = new Stack<Transaction>();
+        private int balance = 0;
 
         public BankAccount(TextWriter printer, IClock clock)
         {
@@ -17,14 +20,24 @@ namespace BankKata
 
         public void Deposit(int amount)
         {
-            this.amount = amount;
+            this.balance += amount;
+            this.transactions.Push(new Transaction(this.clock.Now, amount, balance));
+        }
+
+        public void Withdraw(int amount)
+        {
+            this.balance -= amount;
+            this.transactions.Push(new Transaction(this.clock.Now, amount * -1, balance));
         }
 
         public void PrintStatement()
         {
-            var formattedAmount = $"{amount}.00".PadLeft(7);
             this.printer.WriteLine("DATE         AMOUNT   BALANCE");
-            this.printer.WriteLine($"{this.clock.Now.ToString("d")}   {formattedAmount} {formattedAmount}");
+
+            foreach (var transaction in this.transactions)
+            {
+                this.printer.WriteLine(transaction.ToString());
+            }
             this.printer.Flush();
         }
     }

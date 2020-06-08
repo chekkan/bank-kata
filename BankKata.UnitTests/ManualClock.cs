@@ -12,5 +12,10 @@ namespace BankKata.UnitTests
         }
 
         public DateTime Now => this.now;
+
+        public void Advance(int days)
+        {
+            this.now = this.now.AddDays(days);
+        }
     }
 }

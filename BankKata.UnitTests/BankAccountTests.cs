@@ -8,9 +8,9 @@ namespace BankKata.UnitTests
     public class BankAccountTests
     {
         [Theory]
-        [InlineData("10-04-2014", 500)]
-        [InlineData("10-04-2014", 1000)]
-        [InlineData("12-07-2020", 1401)]
+        [InlineData("2014-04-10", 500)]
+        [InlineData("2014-04-10", 1000)]
+        [InlineData("2020-07-12", 1401)]
         public void PrintStatementAfterDeposit(string date, int amount)
         {
             DateTime now = DateTime.Parse(date);
@@ -18,10 +18,50 @@ namespace BankKata.UnitTests
             string amountStr = $"{amount}.00".PadLeft(7);
             var expected = new StringBuilder();
             expected.AppendLine("DATE         AMOUNT   BALANCE");
-            expected.AppendLine($"{now.ToString("d")}   {amountStr} {amountStr}");
+            expected.AppendLine($"{now:d}  {amountStr} {amountStr}");
             var printer = new StringWriter();
             var sut = new BankAccount(printer, clock);
             sut.Deposit(amount);
+            sut.PrintStatement();
+            var actual = printer.GetStringBuilder();
+            Assert.Equal(expected.ToString(), actual.ToString());
+        }
+
+        [Fact]
+        public void MultipleDeposits()
+        {
+            var now = DateTime.Parse("2019-12-01");
+            var later = DateTime.Parse("2019-12-21");
+            var expected = new StringBuilder();
+            expected.AppendLine("DATE         AMOUNT   BALANCE");
+            expected.AppendLine($"{later:d}  1100.00 1200.00");
+            expected.AppendLine($"{now:d}   100.00  100.00");
+
+            var printer = new StringWriter();
+            var clock = new ManualClock(now);
+            var sut = new BankAccount(printer, clock);
+            sut.Deposit(100);
+            clock.Advance(20);
+            sut.Deposit(1100);
+            sut.PrintStatement();
+            var actual = printer.GetStringBuilder();
+            Assert.Equal(expected.ToString(), actual.ToString());
+        }
+
+        [Fact]
+        public void WithdrawThenPrintStatement()
+        {
+            var now = DateTime.Parse("2019-11-23");
+            var expected = new StringBuilder();
+            expected.AppendLine("DATE         AMOUNT   BALANCE");
+            expected.AppendLine("24/11/2019   -90.00   10.00");
+            expected.AppendLine("23/11/2019   100.00  100.00");
+            var clock = new ManualClock(now);
+            var printer = new StringWriter();
+            var sut = new BankAccount(printer, clock);
+            sut.Deposit(100);
+            clock.Advance(1);
+            sut.Withdraw(90);
             sut.PrintStatement();
             var actual = printer.GetStringBuilder();
             Assert.Equal(expected.ToString(), actual.ToString());
