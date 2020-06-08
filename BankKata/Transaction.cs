@@ -2,7 +2,7 @@ using System;
 
 namespace BankKata
 {
-    internal class Transaction
+    public class Transaction
     {
         public Transaction(DateTime timestamp, int amount, int balance)
         {
@@ -18,7 +18,7 @@ namespace BankKata
         public override string ToString()
         {
             var formattedAmount = $"{this.Amount}.00".PadLeft(7);
-            var formattedBalance = $"{this.Balance}.00".PadLeft(7);
+            var formattedBalance = $"{this.Balance}.00".PadLeft(9);
             return $"{this.Timestamp.ToString("d")}  {formattedAmount} {formattedBalance}";
         }
     }
