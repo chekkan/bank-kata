@@ -17,5 +17,10 @@ namespace BankKata.UnitTests
         {
             this.now = this.now.AddDays(days);
         }
+
+        internal void Change(DateTime now)
+        {
+            this.now = now;
+        }
     }
 }
